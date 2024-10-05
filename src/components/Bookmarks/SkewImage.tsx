@@ -51,7 +51,7 @@ const SkewImage: React.FC<SkewImageProps> = ({
       <img
         src={src}
         alt={alt}
-        className={`${className} transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+        className={`${className} z-40 transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onLoad={() => setIsLoaded(true)}
