@@ -1,0 +1,12 @@
+.glow:hover {
+    text-shadow:
+        1px 1px 1px green,
+        0 0 1em greenyellow,
+        0 0 0.2em yellow;
+}
+
+.glow {
+    text-shadow: none;
+    transition: all;
+    transition-duration: 0.5s;
+}
