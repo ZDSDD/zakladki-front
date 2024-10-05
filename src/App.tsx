@@ -1,4 +1,4 @@
-import BookmarksList from "./components/BookmarksList";
+import BookmarksList from "./components/Bookmarks/BookmarksList";
 
 function App() {
   return (
