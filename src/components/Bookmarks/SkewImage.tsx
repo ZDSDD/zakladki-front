@@ -46,7 +46,7 @@ const SkewImage: React.FC<SkewImageProps> = ({
   return (
     <div className="relative inline-block" style={{ perspective: "1000px" }}>
       {!isLoaded && (
-        <Skeleton className="absolute inset-0 bg-gray-200 animate-pulse" />
+        <Skeleton className="absolute inset-0 bg-gray-200 animate-pulse w-50 h-50" />
       )}
       <img
         src={src}

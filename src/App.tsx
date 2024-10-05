@@ -1,11 +1,22 @@
-import BookmarksList from "./components/Bookmarks/BookmarksList";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Root from "./pages/Root";
+import HomePage from "./pages/HomePage";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        index: true,
+        element: <HomePage></HomePage>,
+      },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <div className="container mx-auto">
-      <BookmarksList></BookmarksList>
-    </div>
-  );
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
 export default App;
