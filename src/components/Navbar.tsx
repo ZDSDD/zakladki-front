@@ -6,7 +6,7 @@ const Navbar = () => {
       <div className="container grid h-12 max-w-screen-2xl items-center grid-cols-[1fr_auto_1fr]">
         {/* Left side links */}
         <div className="flex justify-end mr-5 hover:text-green-600 transition-colors duration-500">
-          <Link to="/bookmarks">Bookmarks</Link>
+          <Link to="/login">Login</Link>
         </div>
 
         {/* Centered title */}
