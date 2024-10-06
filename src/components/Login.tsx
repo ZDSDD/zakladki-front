@@ -1,63 +1,91 @@
-// src/components/Login.tsx
+// Import Bootstrap styles
+import Spinner from "react-bootstrap/Spinner";
+import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "@/reducers/authSlice";
-import { User } from "@/types/auth";
+import { useLoginMutation } from "@/store/apis/authApi"; // Adjust the path to your authApi
+import { setCredentials } from "@/reducers/authSlice"; // Adjust the path to your authSlice
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const response = await fetch("https://your-api-url/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-
-      // Dispatch login action with user data and access token
-      const user: User = {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.name,
-        // Include any other user fields as necessary
-      };
-      dispatch(login({ user, token: data.token }));
-
-      // Set the refresh token in a cookie
-      document.cookie = `refresh_token=${data.refreshToken}; path=/; HttpOnly; Secure`;
-    } else {
-      console.error("Login failed");
-      // Handle error appropriately
+    console.log("Logging in...");
+    try {
+      const userData = await login({ email, password }).unwrap();
+      console.log("Logged in:", userData);
+      dispatch(setCredentials(userData));
+    } catch (err: unknown) {
+      console.error("Failed to log in:", err);
+      if (err && typeof err === "object" && "status" in err) {
+        const error = err as { status: number };
+        if (error.status === 404) {
+          alert("User not found");
+        } else if (error.status === 401) {
+          alert("Invalid password");
+        } else {
+          alert("failed to log in");
+        }
+      } else {
+        alert("An unexpected error occured");
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div className="border border-blue-500 flex flex-col space-y-5 max-w-96">
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
+          <Form.Text className="text-muted">
+            We'll never share your email with anyone else.
+          </Form.Text>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+        </Form.Group>
+        <div className="flex justify-center items-center mb-3">
+          {isLoading ? (
+            <Button variant="primary" disabled>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />{" "}
+              Loggin in ...
+            </Button>
+          ) : (
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          )}
+        </div>
+      </Form>
+    </div>
   );
 };
 

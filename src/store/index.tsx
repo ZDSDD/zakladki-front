@@ -11,7 +11,9 @@ export const store = configureStore({
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware().concat(bookmarksApi.middleware);
+    return getDefaultMiddleware()
+      .concat(bookmarksApi.middleware)
+      .concat(authApi.middleware);
   },
 });
 
@@ -23,4 +25,4 @@ export type AppDispatch = typeof store.dispatch;
 export { useFetchBookmarksQuery } from "./apis/bookmarksApi";
 
 export { useLoginMutation, useProtectedQuery } from "@/store/apis/authApi";
-export { login, logout } from "@/reducers/authSlice";
+export { setCredentials, logOut } from "@/reducers/authSlice";

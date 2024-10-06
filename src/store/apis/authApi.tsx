@@ -1,43 +1,45 @@
-import {
-  BaseQueryApi,
-  createApi,
-  FetchArgs,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/store";
-import { LoginResponse, LoginPayload, User } from "@/types/auth";
-import { login, logout } from "@/store";
+import { LoginResponse, LoginCredentials, User } from "@/types/auth";
+import { setCredentials, logOut } from "@/reducers/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://api.example.com",
+  baseUrl: "http://localhost:8080/api/users",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {
+      console.log("Token is present, set header with bearer");
+
       headers.set("authorization", `Bearer ${token}`);
+    } else {
+      console.log("NO TOKEN FOUND :(");
     }
     return headers;
   },
 });
 
-const baseQueryWithReauth = async (
-  args: string | FetchArgs,
-  api: BaseQueryApi,
-  extraOptions: any,
-) => {
+const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 401) {
     // Try to get a new token
-    const refreshResult = await baseQuery("/refresh", api, extraOptions);
+    console.log("trying to get new token");
+    const refreshResult = await baseQuery(
+      { url: "refresh", method: "POST" },
+      api,
+      extraOptions,
+    );
     if (refreshResult?.data) {
       const user = (api.getState() as RootState).auth.user as User;
       // Store the new token
-      api.dispatch(login({ user, token: refreshResult.data as string }));
+      api.dispatch(
+        setCredentials({ user, token: refreshResult.data as string }),
+      );
       // Retry the original query with new token
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logout());
+      api.dispatch(logOut());
     }
   }
 
@@ -47,7 +49,7 @@ const baseQueryWithReauth = async (
 export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginPayload>({
+    login: builder.mutation<LoginResponse, LoginCredentials>({
       query: (credentials) => ({
         url: "/login",
         method: "POST",
