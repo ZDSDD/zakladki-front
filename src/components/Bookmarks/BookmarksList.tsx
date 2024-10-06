@@ -21,12 +21,11 @@ function BookmarksList() {
     }
 
     return (
-      <div className="p-2 m-3 border border-blue-500 flex flex-wrap gap-4">
+      <div className="p-2 m-3 border border-blue-500 flex flex-wrap gap-1">
         {data.map((bookmark: Bookmark) => (
           <BookmarkListItem
             key={bookmark.ID}
             bookmark={bookmark}
-            className="min-w-56 w-1/6"
           ></BookmarkListItem>
         ))}
       </div>

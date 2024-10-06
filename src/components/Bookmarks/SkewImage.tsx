@@ -15,12 +15,12 @@ const SkewImage: React.FC<SkewImageProps> = ({
   alt,
   className = "",
   maxRotation = 10,
-  maxScale = 1.1,
+  maxScale = 1,
   transitionSpeed = 0.1,
 }) => {
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.9);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleMouseMove = useCallback(
@@ -40,18 +40,21 @@ const SkewImage: React.FC<SkewImageProps> = ({
   const handleMouseLeave = useCallback(() => {
     setRotateX(0);
     setRotateY(0);
-    setScale(1);
+    setScale(0.9);
   }, []);
 
   return (
-    <div className="relative inline-block" style={{ perspective: "1000px" }}>
+    <div
+      className={`${className} relative inline-block`}
+      style={{ perspective: "1000px" }}
+    >
       {!isLoaded && (
-        <Skeleton className="absolute inset-0 bg-gray-200 animate-pulse w-50 h-50" />
+        <Skeleton className="bg-gray-200 animate-pulse w[200px] h-[450px]" />
       )}
       <img
         src={src}
         alt={alt}
-        className={`${className} z-40 transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+        className={`z-40 transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onLoad={() => setIsLoaded(true)}
