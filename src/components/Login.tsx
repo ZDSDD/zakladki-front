@@ -1,28 +1,32 @@
 // Import Bootstrap styles
-import Spinner from "react-bootstrap/Spinner";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/store/apis/authApi"; // Adjust the path to your authApi
 import { setCredentials } from "@/reducers/authSlice"; // Adjust the path to your authSlice
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import MultiStateButton from "./MultistateButton";
+import { ButtonState } from "./MultistateButton";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [buttonState, setButtonState] = useState<ButtonState>("default");
+
   const dispatch = useDispatch();
 
-  const [login, { isLoading }] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Logging in...");
+    setButtonState("loading");
     try {
       const userData = await login({ email, password }).unwrap();
-      console.log("Logged in:", userData);
       dispatch(setCredentials(userData));
+      setButtonState("success");
     } catch (err: unknown) {
+      setButtonState("failed");
       console.error("Failed to log in:", err);
       if (err && typeof err === "object" && "status" in err) {
         const error = err as { status: number };
@@ -40,7 +44,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="border border-blue-500 flex flex-col space-y-5 max-w-96">
+    <div className="border border-blue-500 flex flex-col space-y-3 max-w-96 p-3">
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -66,24 +70,13 @@ const Login: React.FC = () => {
             }}
           />
         </Form.Group>
-        <div className="flex justify-center items-center mb-3">
-          {isLoading ? (
-            <Button variant="primary" disabled>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />{" "}
-              Loggin in ...
-            </Button>
-          ) : (
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
-          )}
-        </div>
+        <MultiStateButton
+          state={buttonState}
+          onClick={() => {
+            console.log("Button clicked");
+          }}
+          type="submit"
+        ></MultiStateButton>
       </Form>
     </div>
   );
