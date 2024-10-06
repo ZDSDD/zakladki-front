@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface SkewImageProps {
   src: string;
@@ -49,7 +48,7 @@ const SkewImage: React.FC<SkewImageProps> = ({
       style={{ perspective: "1000px" }}
     >
       {!isLoaded && (
-        <Skeleton className="bg-gray-200 animate-pulse w[200px] h-[450px]" />
+        <div className="w-[200px] h-[400px] rounded-xl bg-slate-600 border border-dashed" />
       )}
       <img
         src={src}
