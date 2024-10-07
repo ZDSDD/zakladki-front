@@ -72,7 +72,7 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
         };
       case "loading":
         return {
-          variant: "primary",
+          variant: "outline-primary",
           disabled: true,
           children: (
             <>
