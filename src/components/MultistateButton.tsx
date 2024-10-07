@@ -50,33 +50,30 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
       case "success":
         return {
           variant: "outline-success",
-          className: "bg-green-500 hover:bg-green-600 text-white",
           disabled: true,
           children: (
             <>
-              <BsCheck2 className="mr-2 h-4 w-4" /> Success
+              <BsCheck2 className="absolute left-4" /> Success
             </>
           ),
         };
       case "failed":
         return {
-          variant: "outline-warning",
-          className: "bg-red-500 hover:bg-red-600 text-white",
+          variant: "warning",
           onClick,
           children: (
             <>
-              <BsXLg className="mr-2 h-4 w-4" /> Failed - Retry
+              <BsXLg className="absolute left-4" /> Failed - Retry
             </>
           ),
         };
       case "loading":
         return {
-          variant: "outline-primary",
-          className: "bg-blue-500 text-white",
+          variant: "primary",
           disabled: true,
           children: (
             <>
-              <Spinner /> Loading...
+              <Spinner className="absolute left-4" /> Loading...
             </>
           ),
         };
@@ -95,7 +92,7 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
     <div className="flex justify-center items-center">
       <Button
         {...buttonProps}
-        className={`w-full ${buttonProps.className || ""}`}
+        className={`w-full relative flex items-center justify-center ${buttonProps.className || ""}`}
         type={type}
       />
     </div>

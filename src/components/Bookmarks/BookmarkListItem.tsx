@@ -9,13 +9,12 @@ function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
   const inStock: boolean = bookmark.AvailableAmount > 0;
 
   return (
-    <div
-      className={`${className} border w-[200px] h-auto shadow-lg m-1 hover:shadow-2xl transition-shadow duration-300 ease-in-out`}
-    >
+    <div className={`${className} border w-[200px] h-auto m-1`}>
       <SkewImage
         src={`http://localhost:8080/images/${bookmark.ImageUrl}`}
         alt={bookmark.Name}
         className="hover:cursor-pointer hover:drop-shadow-lg"
+        maxRotation={12}
       />
       <div className="px-2">
         <h3 className="text-base text-start">{bookmark.Name}</h3>

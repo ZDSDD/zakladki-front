@@ -12,34 +12,50 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonState, setButtonState] = useState<ButtonState>("default");
-
+  const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
 
   const [login] = useLoginMutation();
+
+  const handleLoginError = (err: unknown) => {
+    console.error("Failed to log in:", err);
+
+    if (err && typeof err === "object" && "status" in err) {
+      const error = err as { status: number; data?: { error?: string } };
+
+      switch (error.status) {
+        case 400:
+          if (error.data?.error) {
+            return error.data.error;
+          }
+          break;
+        case 404:
+          return "User not found";
+        case 401:
+          return "Invalid password";
+        case 500:
+        default:
+          return "Something is wrong on our side. Try again later and sorry! :(";
+      }
+    }
+
+    return "An unexpected error occurred";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Logging in...");
     setButtonState("loading");
+
     try {
       const userData = await login({ email, password }).unwrap();
       dispatch(setCredentials(userData));
       setButtonState("success");
+      setErrorMsg("");
     } catch (err: unknown) {
       setButtonState("failed");
-      console.error("Failed to log in:", err);
-      if (err && typeof err === "object" && "status" in err) {
-        const error = err as { status: number };
-        if (error.status === 404) {
-          alert("User not found");
-        } else if (error.status === 401) {
-          alert("Invalid password");
-        } else {
-          alert("failed to log in");
-        }
-      } else {
-        alert("An unexpected error occured");
-      }
+      const errorMsg = handleLoginError(err);
+      setErrorMsg(errorMsg);
     }
   };
 
@@ -70,6 +86,11 @@ const Login: React.FC = () => {
             }}
           />
         </Form.Group>
+        {errorMsg != "" && (
+          <div className="mb-2 text-orange-500">
+            <span>{errorMsg}</span>
+          </div>
+        )}
         <MultiStateButton
           state={buttonState}
           onClick={() => {
