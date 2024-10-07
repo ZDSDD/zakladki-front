@@ -39,9 +39,11 @@ const successButton: RegisterButtonState = {
 const Register: React.FC<RegisterProps> = ({ className }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [retypedPassword, setRetypedPassword] = useState("");
   const [buttonState, setButtonState] =
     useState<RegisterButtonState>(defaultButton);
   const [errorMsg, setErrorMsg] = useState("");
+  const [validated, setValidated] = useState(false);
   const dispatch = useDispatch();
 
   const [login] = useLoginMutation();
@@ -73,6 +75,12 @@ const Register: React.FC<RegisterProps> = ({ className }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password != retypedPassword) {
+      setErrorMsg("Passwords are not the same");
+      return;
+    }
+
     console.log("Logging in...");
     setButtonState(loadingButton);
 
@@ -99,20 +107,49 @@ const Register: React.FC<RegisterProps> = ({ className }) => {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
+            required
           />
+          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Enter a valid email!
+          </Form.Control.Feedback>
           <Form.Text className="text-muted">
             We'll never share your email with anyone else.
           </Form.Text>
         </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Imię</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="twoje imię"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            required
+          />
+          <Form.Text className="text-muted">some text here</Form.Text>
+        </Form.Group>
 
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Hasło</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="hasło"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            required
+          />
+        </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
+            placeholder="powtórz hasło"
             onChange={(e) => {
-              setPassword(e.target.value);
+              setRetypedPassword(e.target.value);
             }}
+            required
           />
         </Form.Group>
         {errorMsg != "" && (

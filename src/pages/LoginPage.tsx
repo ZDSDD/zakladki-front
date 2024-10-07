@@ -23,16 +23,16 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center flex-col m-auto">
+    <div className="flex justify-center items-center flex-col m-auto transition-all duration-1000 delay-500">
       {getForm()}
       <div
         className="hover:cursor-pointer hover:underline"
         onClick={() => setNotRegisteredYet((oldVal) => !oldVal)}
       >
         {notRegisteredYet ? (
-          <span>Nie masz konta? Zarejestruj się</span>
-        ) : (
           <span>Masz już konto? Zaloguj się</span>
+        ) : (
+          <span>Nie masz konta? Zarejestruj się</span>
         )}
       </div>
     </div>
