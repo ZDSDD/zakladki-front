@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
 import Button from "react-bootstrap/Button";
 // Import Bootstrap styles
 import Spinner from "react-bootstrap/Spinner";
@@ -11,6 +12,7 @@ interface MultiStateButtonProps {
   state: ButtonState;
   type?: ButtonType;
   onClick?: () => void;
+  children?: React.ReactNode;
 }
 type ButtonVariant =
   | "primary"
@@ -35,7 +37,6 @@ interface ButtonConfig {
   variant: ButtonVariant;
   className?: string;
   disabled?: boolean;
-  children: React.ReactNode;
   onClick?: () => void;
   type?: ButtonType;
 }
@@ -44,6 +45,7 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
   state,
   onClick,
   type = "button",
+  children,
 }) => {
   const getButtonProps = (): ButtonConfig => {
     switch (state) {
@@ -51,37 +53,36 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
         return {
           variant: "outline-success",
           disabled: true,
-          children: (
-            <>
-              <BsCheck2 className="absolute left-4" /> Success
-            </>
-          ),
+          //   children: (
+          //     <>
+          //       <BsCheck2 className="absolute left-4" /> Success
+          //     </>
+          //   ),
         };
       case "failed":
         return {
           variant: "warning",
           onClick,
-          children: (
-            <>
-              <BsXLg className="absolute left-4" /> Failed - Retry
-            </>
-          ),
+          //   children: { children },
+          // <>
+          //   <BsXLg className="absolute left-4" /> Failed - Retry
+          // </>
         };
       case "loading":
         return {
           variant: "primary",
           disabled: true,
-          children: (
-            <>
-              <Spinner className="absolute left-4" /> Loading...
-            </>
-          ),
+          //   children: (
+          //     <>
+          //       <Spinner className="absolute left-4" /> Loading...
+          //     </>
+          //   ),
         };
       default:
         return {
           variant: "primary",
           onClick,
-          children: "Submit",
+          //   children: "Submit",
         };
     }
   };
@@ -94,7 +95,10 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
         {...buttonProps}
         className={`w-full relative flex items-center justify-center ${buttonProps.className || ""}`}
         type={type}
-      />
+      >
+        {" "}
+        {children}
+      </Button>
     </div>
   );
 };

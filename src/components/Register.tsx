@@ -8,40 +8,39 @@ import Form from "react-bootstrap/Form";
 import MultiStateButton from "./MultistateButton";
 import { ButtonState } from "./MultistateButton";
 
-interface LoginProps {
+interface RegisterProps {
   className?: string;
 }
-
-interface LoginButtonState {
+interface RegisterButtonState {
   state: ButtonState;
   msg: React.ReactNode;
 }
 
-const defaultButton: LoginButtonState = {
+const defaultButton: RegisterButtonState = {
   state: "default",
-  msg: "zaloguj",
+  msg: "zarejestruj",
 };
 
-const loadingButton: LoginButtonState = {
+const loadingButton: RegisterButtonState = {
   state: "loading",
   msg: "trwa ładowanie",
 };
 
-const failedButton: LoginButtonState = {
+const failedButton: RegisterButtonState = {
   state: "failed",
   msg: "spróbuj ponownie",
 };
 
-const successButton: LoginButtonState = {
+const successButton: RegisterButtonState = {
   state: "success",
   msg: "sukces!",
 };
 
-const Login: React.FC<LoginProps> = ({ className }) => {
+const Register: React.FC<RegisterProps> = ({ className }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonState, setButtonState] =
-    useState<LoginButtonState>(defaultButton);
+    useState<RegisterButtonState>(defaultButton);
   const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
 
@@ -129,4 +128,4 @@ const Login: React.FC<LoginProps> = ({ className }) => {
   );
 };
 
-export default Login;
+export default Register;
