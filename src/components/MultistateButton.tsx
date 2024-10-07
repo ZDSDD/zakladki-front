@@ -1,19 +1,19 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
-import Button from "react-bootstrap/Button";
-// Import Bootstrap styles
-import Spinner from "react-bootstrap/Spinner";
-import { BsCheck2 } from "react-icons/bs";
-import { BsXLg } from "react-icons/bs";
+import { Button, Spinner } from "react-bootstrap";
+import { BsCheck2, BsXLg } from "react-icons/bs";
 
 export type ButtonState = "default" | "success" | "failed" | "loading";
 type ButtonType = "button" | "submit" | "reset";
+
 interface MultiStateButtonProps {
   state: ButtonState;
   type?: ButtonType;
   onClick?: () => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+  disabled?: boolean;
 }
+
 type ButtonVariant =
   | "primary"
   | "secondary"
@@ -35,70 +35,44 @@ type ButtonVariant =
 
 interface ButtonConfig {
   variant: ButtonVariant;
-  className?: string;
   disabled?: boolean;
-  onClick?: () => void;
-  type?: ButtonType;
-  children: React.ReactNode;
+  icon?: React.ReactNode;
 }
+
+const buttonConfigs: Record<ButtonState, ButtonConfig> = {
+  default: { variant: "primary" },
+  success: { variant: "outline-success", disabled: true, icon: <BsCheck2 /> },
+  failed: { variant: "warning", icon: <BsXLg /> },
+  loading: {
+    variant: "outline-primary",
+    disabled: true,
+    icon: <Spinner size="sm" animation="border" />,
+  },
+};
 
 const MultiStateButton: React.FC<MultiStateButtonProps> = ({
   state,
   onClick,
   type = "button",
   children,
+  className = "",
+  disabled: propDisabled,
 }) => {
-  const getButtonProps = (): ButtonConfig => {
-    switch (state) {
-      case "success":
-        return {
-          variant: "outline-success",
-          disabled: true,
-          children: (
-            <>
-              <BsCheck2 className="absolute left-4" /> {children}
-            </>
-          ),
-        };
-      case "failed":
-        return {
-          variant: "warning",
-          onClick,
-          children: (
-            <>
-              <BsXLg className="absolute left-4" /> {children}
-            </>
-          ),
-        };
-      case "loading":
-        return {
-          variant: "outline-primary",
-          disabled: true,
-          children: (
-            <>
-              <Spinner className="absolute left-4" /> {children}
-            </>
-          ),
-        };
-      default:
-        return {
-          variant: "primary",
-          onClick,
-          children: <>{children}</>,
-        };
-    }
-  };
-
-  const buttonProps = getButtonProps();
+  const { variant, disabled: configDisabled, icon } = buttonConfigs[state];
+  const isDisabled = propDisabled || configDisabled;
 
   return (
-    <div className="flex justify-center items-center">
-      <Button
-        {...buttonProps}
-        className={`w-full relative flex items-center justify-center ${buttonProps.className || ""}`}
-        type={type}
-      ></Button>
-    </div>
+    <Button
+      variant={variant}
+      onClick={onClick}
+      type={type}
+      disabled={isDisabled}
+      className={`position-relative d-flex align-items-center justify-content-center w-full ${className}`}
+      aria-busy={state === "loading"}
+    >
+      {icon && <span className="position-absolute start-0 ms-2">{icon}</span>}
+      <span className="mx-2">{children}</span>
+    </Button>
   );
 };
 

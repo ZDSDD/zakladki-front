@@ -1,10 +1,11 @@
-// Import Bootstrap styles
 import "bootstrap/dist/css/bootstrap.min.css";
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
-import { useLoginMutation } from "@/store/apis/authApi"; // Adjust the path to your authApi
-import { setCredentials } from "@/reducers/authSlice"; // Adjust the path to your authSlice
-import Form from "react-bootstrap/Form";
+import { useLoginMutation } from "@/store/apis/authApi";
+import { setCredentials } from "@/reducers/authSlice";
+import { Form, Alert } from "react-bootstrap";
+import { Formik, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import MultiStateButton from "./MultistateButton";
 import { ButtonState } from "./MultistateButton";
 
@@ -17,37 +18,25 @@ interface LoginButtonState {
   msg: React.ReactNode;
 }
 
-const defaultButton: LoginButtonState = {
-  state: "default",
-  msg: "zaloguj",
-};
-
-const loadingButton: LoginButtonState = {
-  state: "loading",
-  msg: "trwa ładowanie",
-};
-
-const failedButton: LoginButtonState = {
-  state: "failed",
-  msg: "spróbuj ponownie",
-};
-
-const successButton: LoginButtonState = {
-  state: "success",
-  msg: "sukces!",
+const buttonStates: Record<string, LoginButtonState> = {
+  default: { state: "default", msg: "Zaloguj" },
+  loading: { state: "loading", msg: "Trwa ładowanie" },
+  failed: { state: "failed", msg: "Spróbuj ponownie" },
+  success: { state: "success", msg: "Sukces!" },
 };
 
 const Login: React.FC<LoginProps> = ({ className }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [buttonState, setButtonState] =
-    useState<LoginButtonState>(defaultButton);
-  const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
-
   const [login] = useLoginMutation();
 
-  const handleLoginError = (err: unknown) => {
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Nieprawidłowy adres email")
+      .required("Email jest wymagany"),
+    password: Yup.string().required("Hasło jest wymagane"),
+  });
+
+  const handleLoginError = (err: unknown): string => {
     console.error("Failed to log in:", err);
 
     if (err && typeof err === "object" && "status" in err) {
@@ -55,76 +44,109 @@ const Login: React.FC<LoginProps> = ({ className }) => {
 
       switch (error.status) {
         case 400:
-          if (error.data?.error) {
-            return error.data.error;
-          }
-          break;
+          return error.data?.error || "Nieprawidłowe dane";
         case 404:
-          return "User not found";
+          return "Użytkownik nie znaleziony";
         case 401:
-          return "Invalid password";
+          return "Nieprawidłowe hasło";
         case 500:
         default:
-          return "Something is wrong on our side. Try again later and sorry! :(";
+          return "Wystąpił błąd po naszej stronie. Przepraszamy i spróbuj ponownie później.";
       }
     }
 
-    return "An unexpected error occurred";
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Logging in...");
-    setButtonState(loadingButton);
-
-    try {
-      const userData = await login({ email, password }).unwrap();
-      dispatch(setCredentials(userData));
-      setButtonState(successButton);
-      setErrorMsg("");
-    } catch (err: unknown) {
-      setButtonState(failedButton);
-      const errorMsg = handleLoginError(err);
-      setErrorMsg(errorMsg);
-    }
+    return "Wystąpił nieoczekiwany błąd";
   };
 
   return (
     <div className={`${className} flex flex-col space-y-3 p-3`}>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          />
-          <Form.Text className="text-muted">
-            We'll never share your email with anyone else.
-          </Form.Text>
-        </Form.Group>
+      <Formik
+        initialValues={{
+          email: "",
+          password: "",
+        }}
+        validationSchema={validationSchema}
+        onSubmit={async (values, { setSubmitting, setStatus }) => {
+          setStatus({ buttonState: buttonStates.loading });
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          />
-        </Form.Group>
-        {errorMsg != "" && (
-          <div className="mb-2 text-orange-500">
-            <span>{errorMsg}</span>
-          </div>
+          try {
+            const userData = await login({
+              email: values.email,
+              password: values.password,
+            }).unwrap();
+            dispatch(setCredentials(userData));
+            setStatus({ buttonState: buttonStates.success });
+          } catch (err: unknown) {
+            setStatus({
+              buttonState: buttonStates.failed,
+              errorMsg: handleLoginError(err),
+            });
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      >
+        {({ handleSubmit, isSubmitting, status }) => (
+          <Form onSubmit={handleSubmit}>
+            <Field name="email">
+              {({ field, meta }: any) => (
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>Adres email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Wprowadź email"
+                    {...field}
+                    isInvalid={meta.touched && meta.error}
+                  />
+                  <ErrorMessage name="email">
+                    {(msg) => (
+                      <Form.Control.Feedback type="invalid">
+                        {msg}
+                      </Form.Control.Feedback>
+                    )}
+                  </ErrorMessage>
+                  <Form.Text className="text-muted">
+                    Nigdy nie udostępnimy Twojego adresu email innym osobom.
+                  </Form.Text>
+                </Form.Group>
+              )}
+            </Field>
+
+            <Field name="password">
+              {({ field, meta }: any) => (
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Label>Hasło</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Hasło"
+                    {...field}
+                    isInvalid={meta.touched && meta.error}
+                  />
+                  <ErrorMessage name="password">
+                    {(msg) => (
+                      <Form.Control.Feedback type="invalid">
+                        {msg}
+                      </Form.Control.Feedback>
+                    )}
+                  </ErrorMessage>
+                </Form.Group>
+              )}
+            </Field>
+
+            {status?.errorMsg && (
+              <Alert variant="danger">{status.errorMsg}</Alert>
+            )}
+
+            <MultiStateButton
+              state={status?.buttonState?.state || buttonStates.default.state}
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {status?.buttonState?.msg || buttonStates.default.msg}
+            </MultiStateButton>
+          </Form>
         )}
-        <MultiStateButton state={buttonState.state} type="submit">
-          {buttonState.msg}
-        </MultiStateButton>
-      </Form>
+      </Formik>
     </div>
   );
 };
