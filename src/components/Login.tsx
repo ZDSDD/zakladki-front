@@ -8,7 +8,11 @@ import Form from "react-bootstrap/Form";
 import MultiStateButton from "./MultistateButton";
 import { ButtonState } from "./MultistateButton";
 
-const Login: React.FC = () => {
+interface LoginProps {
+  className?: string;
+}
+
+const Login: React.FC<LoginProps> = ({ className }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonState, setButtonState] = useState<ButtonState>("default");
@@ -60,7 +64,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="border border-blue-500 flex flex-col space-y-3 max-w-96 p-3">
+    <div className={`${className} flex flex-col space-y-3 p-3`}>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
