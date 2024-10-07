@@ -39,6 +39,7 @@ interface ButtonConfig {
   disabled?: boolean;
   onClick?: () => void;
   type?: ButtonType;
+  children: React.ReactNode;
 }
 
 const MultiStateButton: React.FC<MultiStateButtonProps> = ({
@@ -53,36 +54,37 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
         return {
           variant: "outline-success",
           disabled: true,
-          //   children: (
-          //     <>
-          //       <BsCheck2 className="absolute left-4" /> Success
-          //     </>
-          //   ),
+          children: (
+            <>
+              <BsCheck2 className="absolute left-4" /> {children}
+            </>
+          ),
         };
       case "failed":
         return {
           variant: "warning",
           onClick,
-          //   children: { children },
-          // <>
-          //   <BsXLg className="absolute left-4" /> Failed - Retry
-          // </>
+          children: (
+            <>
+              <BsXLg className="absolute left-4" /> {children}
+            </>
+          ),
         };
       case "loading":
         return {
           variant: "primary",
           disabled: true,
-          //   children: (
-          //     <>
-          //       <Spinner className="absolute left-4" /> Loading...
-          //     </>
-          //   ),
+          children: (
+            <>
+              <Spinner className="absolute left-4" /> {children}
+            </>
+          ),
         };
       default:
         return {
           variant: "primary",
           onClick,
-          //   children: "Submit",
+          children: <>{children}</>,
         };
     }
   };
@@ -95,10 +97,7 @@ const MultiStateButton: React.FC<MultiStateButtonProps> = ({
         {...buttonProps}
         className={`w-full relative flex items-center justify-center ${buttonProps.className || ""}`}
         type={type}
-      >
-        {" "}
-        {children}
-      </Button>
+      ></Button>
     </div>
   );
 };
