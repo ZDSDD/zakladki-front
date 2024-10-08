@@ -6,40 +6,34 @@ import { setCredentials } from "@/reducers/authSlice";
 import { Form, Alert } from "react-bootstrap";
 import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
-import MultiStateButton from "./MultistateButton";
-import { ButtonState } from "./MultistateButton";
+import MultiStateButton from "../MultistateButton";
+import { ButtonState } from "../MultistateButton";
 
-interface RegisterProps {
+interface LoginProps {
     className?: string;
 }
 
-interface RegisterButtonState {
+interface LoginButtonState {
     state: ButtonState;
     msg: React.ReactNode;
 }
 
-const buttonStates: Record<string, RegisterButtonState> = {
-    default: { state: "default", msg: "Zarejestruj" },
+const buttonStates: Record<string, LoginButtonState> = {
+    default: { state: "default", msg: "Zaloguj" },
     loading: { state: "loading", msg: "Trwa ładowanie" },
     failed: { state: "failed", msg: "Spróbuj ponownie" },
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Register: React.FC<RegisterProps> = () => {
+const Login: React.FC<LoginProps> = () => {
     const dispatch = useDispatch();
     const [login] = useLoginMutation();
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required("Imię jest wymagane"),
         email: Yup.string()
             .email("Nieprawidłowy adres email")
             .required("Email jest wymagany"),
-        password: Yup.string()
-            .min(8, "Hasło musi mieć co najmniej 8 znaków")
-            .required("Hasło jest wymagane"),
-        retypedPassword: Yup.string()
-            .oneOf([Yup.ref("password")], "Hasła muszą być takie same")
-            .required("Potwierdzenie hasła jest wymagane"),
+        password: Yup.string().required("Hasło jest wymagane"),
     });
 
     const handleLoginError = (err: unknown): string => {
@@ -67,10 +61,8 @@ const Register: React.FC<RegisterProps> = () => {
     return (
         <Formik
             initialValues={{
-                name: "",
                 email: "",
                 password: "",
-                retypedPassword: "",
             }}
             validationSchema={validationSchema}
             onSubmit={async (values, { setSubmitting, setStatus }) => {
@@ -93,34 +85,15 @@ const Register: React.FC<RegisterProps> = () => {
                 }
             }}
         >
-            {({ handleSubmit, status }) => (
+            {({ handleSubmit, isSubmitting, status }) => (
                 <Form onSubmit={handleSubmit}>
-                    <Field name="name">
-                        {({ field, meta }: FieldProps) => (
-                            <Form.Group className="mb-3" controlId="formBasicName">
-                                <Form.Label>Imię</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
-                                />
-                                <ErrorMessage name="name">
-                                    {(msg) => (
-                                        <Form.Control.Feedback type="invalid">
-                                            {msg}
-                                        </Form.Control.Feedback>
-                                    )}
-                                </ErrorMessage>
-                            </Form.Group>
-                        )}
-                    </Field>
-
                     <Field name="email">
                         {({ field, meta }: FieldProps) => (
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <Form.Label>Adres email</Form.Label>
                                 <Form.Control
                                     type="email"
+                                    placeholder="Wprowadź email"
                                     {...field}
                                     isInvalid={meta.touched && meta.error !== null}
                                 />
@@ -141,33 +114,11 @@ const Register: React.FC<RegisterProps> = () => {
                                 <Form.Label>Hasło</Form.Label>
                                 <Form.Control
                                     type="password"
+                                    placeholder="Hasło"
                                     {...field}
                                     isInvalid={meta.touched && meta.error !== null}
                                 />
                                 <ErrorMessage name="password">
-                                    {(msg) => (
-                                        <Form.Control.Feedback type="invalid">
-                                            {msg}
-                                        </Form.Control.Feedback>
-                                    )}
-                                </ErrorMessage>
-                            </Form.Group>
-                        )}
-                    </Field>
-
-                    <Field name="retypedPassword">
-                        {({ field, meta }: FieldProps) => (
-                            <Form.Group
-                                className="mb-3"
-                                controlId="formBasicRetypedPassword"
-                            >
-                                <Form.Label>Powtórz hasło</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
-                                />
-                                <ErrorMessage name="retypedPassword">
                                     {(msg) => (
                                         <Form.Control.Feedback type="invalid">
                                             {msg}
@@ -185,6 +136,7 @@ const Register: React.FC<RegisterProps> = () => {
                     <MultiStateButton
                         state={status?.buttonState?.state || buttonStates.default.state}
                         type="submit"
+                        disabled={isSubmitting}
                     >
                         {status?.buttonState?.msg || buttonStates.default.msg}
                     </MultiStateButton>
@@ -194,4 +146,4 @@ const Register: React.FC<RegisterProps> = () => {
     );
 };
 
-export default Register;
+export default Login;

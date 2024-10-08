@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import Login from "@/components/Login";
-import Register from "@/components/Register";
+import Login from "@/components/auth/Login";
+import Register from "@/components/auth/Register";
 
 const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
 
