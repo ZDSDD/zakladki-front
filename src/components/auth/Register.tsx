@@ -1,16 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Register.css"
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useLoginMutation } from "@/store/apis/authApi";
-import { setCredentials } from "@/reducers/authSlice";
+import { useRegisterMutation } from "@/store/apis/authApi";
 import { Form, Alert } from "react-bootstrap";
 import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
-import passSchema from "./passwordSchema"
-import { calculatePasswordStrength } from "./passwordStrength";
+import passSchema, { calculatePasswordStrength, maxScore } from "./passwordSchema"
 
 interface RegisterProps {
     className?: string;
@@ -29,12 +26,13 @@ const buttonStates: Record<string, RegisterButtonState> = {
 };
 
 const Register: React.FC<RegisterProps> = () => {
-    const dispatch = useDispatch();
-    const [login] = useLoginMutation();
+    const [register] = useRegisterMutation();
     const [passwordScore, setPasswordScore] = useState<number>(0);
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required("Imię jest wymagane"),
+        name: Yup.string()
+            .matches(/^[a-zA-Z]+$/, "Imię może zawierać tylko litery")
+            .required("Imię jest wymagane"),
         email: Yup.string()
             .email("Nieprawidłowy adres email")
             .required("Email jest wymagany"),
@@ -73,11 +71,18 @@ const Register: React.FC<RegisterProps> = () => {
 
     // Map score to the color and width of the bar
     const getStrengthBarStyle = (score: number) => {
-        const colors = ["red", "orange", "yellow", "#c4e538", "green"];
-        const widths = ["20%", "40%", "60%", "80%", "100%"];
+        const ratio = (score / maxScore) * 100;
+        let color = "red";
+        if (ratio > 80) {
+            color = "green"
+        } else if (ratio > 60) {
+            color = "yellow"
+        } else if (ratio > 40) {
+            color = "orange"
+        }
         return {
-            backgroundColor: colors[score - 1] || "red",
-            width: widths[score - 1] || "0%",
+            backgroundColor: color,
+            width: ratio.toString().concat("%") || "0%",
         };
     };
 
@@ -94,11 +99,12 @@ const Register: React.FC<RegisterProps> = () => {
                 setStatus({ buttonState: buttonStates.loading });
 
                 try {
-                    const userData = await login({
+                    const userData = await register({
+                        name: values.name,
                         email: values.email,
                         password: values.password,
                     }).unwrap();
-                    dispatch(setCredentials(userData));
+                    console.log(userData)
                     setStatus({ buttonState: buttonStates.success });
                 } catch (err: unknown) {
                     setStatus({
@@ -111,7 +117,7 @@ const Register: React.FC<RegisterProps> = () => {
             }}
         >
             {({ handleSubmit, status }) => (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} noValidate>
                     <Field name="name">
                         {({ field, meta }: FieldProps) => (
                             <Form.Group className="mb-3" controlId="formBasicName">
@@ -119,7 +125,8 @@ const Register: React.FC<RegisterProps> = () => {
                                 <Form.Control
                                     type="text"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.touched && !!meta.error}
+                                    isValid={meta.touched && !meta.error}
                                 />
                                 <ErrorMessage name="name">
                                     {(msg) => (
@@ -128,6 +135,11 @@ const Register: React.FC<RegisterProps> = () => {
                                         </Form.Control.Feedback>
                                     )}
                                 </ErrorMessage>
+                                {meta.touched && !meta.error && (
+                                    <Form.Control.Feedback type="valid">
+                                        Wygląda dobrze!
+                                    </Form.Control.Feedback>
+                                )}
                             </Form.Group>
                         )}
                     </Field>
@@ -139,7 +151,8 @@ const Register: React.FC<RegisterProps> = () => {
                                 <Form.Control
                                     type="email"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.touched && !!meta.error}
+                                    isValid={meta.touched && !meta.error}
                                 />
                                 <ErrorMessage name="email">
                                     {(msg) => (
@@ -148,6 +161,9 @@ const Register: React.FC<RegisterProps> = () => {
                                         </Form.Control.Feedback>
                                     )}
                                 </ErrorMessage>
+                                <Form.Control.Feedback type="valid">
+                                    Wygląda dobrze!
+                                </Form.Control.Feedback>
                             </Form.Group>
                         )}
                     </Field>
@@ -160,7 +176,8 @@ const Register: React.FC<RegisterProps> = () => {
                                 <Form.Control
                                     type="password"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.touched && !!meta.error}
+                                    isValid={meta.touched && !meta.error}
                                 />
                                 <div className="strength-bar-container border-1">
                                     <div
@@ -175,6 +192,9 @@ const Register: React.FC<RegisterProps> = () => {
                                         </Form.Control.Feedback>
                                     )}
                                 </ErrorMessage>
+                                <Form.Control.Feedback type="valid">
+                                    Fajne hasło! Tak trzymaj! :)
+                                </Form.Control.Feedback>
                             </Form.Group>
                         )}
                     </Field>
@@ -189,7 +209,8 @@ const Register: React.FC<RegisterProps> = () => {
                                 <Form.Control
                                     type="password"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.touched && !!meta.error}
+                                    isValid={meta.touched && !meta.error}
                                 />
                                 <ErrorMessage name="retypedPassword">
                                     {(msg) => (
@@ -198,6 +219,9 @@ const Register: React.FC<RegisterProps> = () => {
                                         </Form.Control.Feedback>
                                     )}
                                 </ErrorMessage>
+                                <Form.Control.Feedback type="valid">
+                                    Przepisane doskonale! Ekstra! :-)
+                                </Form.Control.Feedback>
                             </Form.Group>
                         )}
                     </Field>

@@ -3,7 +3,7 @@ import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/qu
 import { RootState } from "@/store";
 import { LoginResponse, LoginCredentials, User } from "@/types/auth";
 import { setCredentials, logOut } from "@/reducers/authSlice";
-
+import { RegisterPayload, RegisterResponse } from "@/types/register";
 const baseQuery = fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/users",
     credentials: "include",
@@ -61,10 +61,17 @@ export const authApi = createApi({
                 body: credentials,
             }),
         }),
+        register: builder.mutation<RegisterResponse, RegisterPayload>({
+            query: (registerForm) => ({
+                url: "/",
+                method: "POST",
+                body: registerForm
+            })
+        }),
         protected: builder.query<{ message: string }, void>({
             query: () => "protected",
         }),
     }),
 });
 
-export const { useLoginMutation, useProtectedQuery } = authApi;
+export const { useLoginMutation, useProtectedQuery, useRegisterMutation } = authApi;
