@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Register.css"
+import "./styles/Register.css"
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/store/apis/authApi";
@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
 import passSchema from "./passwordSchema"
+import { calculatePasswordStrength } from "./passwordStrength";
 
 interface RegisterProps {
     className?: string;
@@ -68,17 +69,7 @@ const Register: React.FC<RegisterProps> = () => {
 
         return "Wystąpił nieoczekiwany błąd";
     };
-    // Calculate password strength score
-    const calculatePasswordStrength = (password: string): number => {
-        let score = 0;
-        if (password.length >= 8) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[a-z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
 
-        return score; // Returns score from 0 to 5
-    };
 
     // Map score to the color and width of the bar
     const getStrengthBarStyle = (score: number) => {
@@ -171,7 +162,7 @@ const Register: React.FC<RegisterProps> = () => {
                                     {...field}
                                     isInvalid={meta.touched && meta.error !== null}
                                 />
-                                <div className="strength-bar-container">
+                                <div className="strength-bar-container border-1">
                                     <div
                                         className="strength-bar"
                                         style={getStrengthBarStyle(passwordScore)}
