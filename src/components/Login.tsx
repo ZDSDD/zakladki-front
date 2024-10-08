@@ -25,7 +25,7 @@ const buttonStates: Record<string, LoginButtonState> = {
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Login: React.FC<LoginProps> = ({ className }) => {
+const Login: React.FC<LoginProps> = () => {
     const dispatch = useDispatch();
     const [login] = useLoginMutation();
 
@@ -59,95 +59,90 @@ const Login: React.FC<LoginProps> = ({ className }) => {
     };
 
     return (
-        <div className={`${className} flex flex-col space-y-3 p-3`}>
-            <Formik
-                initialValues={{
-                    email: "",
-                    password: "",
-                }}
-                validationSchema={validationSchema}
-                onSubmit={async (values, { setSubmitting, setStatus }) => {
-                    setStatus({ buttonState: buttonStates.loading });
+        <Formik
+            initialValues={{
+                email: "",
+                password: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={async (values, { setSubmitting, setStatus }) => {
+                setStatus({ buttonState: buttonStates.loading });
 
-                    try {
-                        const userData = await login({
-                            email: values.email,
-                            password: values.password,
-                        }).unwrap();
-                        dispatch(setCredentials(userData));
-                        setStatus({ buttonState: buttonStates.success });
-                    } catch (err: unknown) {
-                        setStatus({
-                            buttonState: buttonStates.failed,
-                            errorMsg: handleLoginError(err),
-                        });
-                    } finally {
-                        setSubmitting(false);
-                    }
-                }}
-            >
-                {({ handleSubmit, isSubmitting, status }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <Field name="email">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>Adres email</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        placeholder="Wprowadź email"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="email">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                    <Form.Text className="text-muted">
-                                        Nigdy nie udostępnimy Twojego adresu email innym osobom.
-                                    </Form.Text>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        <Field name="password">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label>Hasło</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Hasło"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="password">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        {status?.errorMsg && (
-                            <Alert variant="danger">{status.errorMsg}</Alert>
+                try {
+                    const userData = await login({
+                        email: values.email,
+                        password: values.password,
+                    }).unwrap();
+                    dispatch(setCredentials(userData));
+                    setStatus({ buttonState: buttonStates.success });
+                } catch (err: unknown) {
+                    setStatus({
+                        buttonState: buttonStates.failed,
+                        errorMsg: handleLoginError(err),
+                    });
+                } finally {
+                    setSubmitting(false);
+                }
+            }}
+        >
+            {({ handleSubmit, isSubmitting, status }) => (
+                <Form onSubmit={handleSubmit}>
+                    <Field name="email">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>Adres email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    placeholder="Wprowadź email"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="email">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
                         )}
+                    </Field>
 
-                        <MultiStateButton
-                            state={status?.buttonState?.state || buttonStates.default.state}
-                            type="submit"
-                            disabled={isSubmitting}
-                        >
-                            {status?.buttonState?.msg || buttonStates.default.msg}
-                        </MultiStateButton>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+                    <Field name="password">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label>Hasło</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Hasło"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="password">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
+                        )}
+                    </Field>
+
+                    {status?.errorMsg && (
+                        <Alert variant="danger">{status.errorMsg}</Alert>
+                    )}
+
+                    <MultiStateButton
+                        state={status?.buttonState?.state || buttonStates.default.state}
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
+                        {status?.buttonState?.msg || buttonStates.default.msg}
+                    </MultiStateButton>
+                </Form>
+            )}
+        </Formik>
     );
 };
 

@@ -25,7 +25,7 @@ const buttonStates: Record<string, RegisterButtonState> = {
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Register: React.FC<RegisterProps> = ({ className }) => {
+const Register: React.FC<RegisterProps> = () => {
     const dispatch = useDispatch();
     const [login] = useLoginMutation();
 
@@ -65,134 +65,132 @@ const Register: React.FC<RegisterProps> = ({ className }) => {
     };
 
     return (
-        <div className={`${className} flex flex-col space-y-3 p-3 min-w-28 w-1/3`}>
-            <Formik
-                initialValues={{
-                    name: "",
-                    email: "",
-                    password: "",
-                    retypedPassword: "",
-                }}
-                validationSchema={validationSchema}
-                onSubmit={async (values, { setSubmitting, setStatus }) => {
-                    setStatus({ buttonState: buttonStates.loading });
+        <Formik
+            initialValues={{
+                name: "",
+                email: "",
+                password: "",
+                retypedPassword: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={async (values, { setSubmitting, setStatus }) => {
+                setStatus({ buttonState: buttonStates.loading });
 
-                    try {
-                        const userData = await login({
-                            email: values.email,
-                            password: values.password,
-                        }).unwrap();
-                        dispatch(setCredentials(userData));
-                        setStatus({ buttonState: buttonStates.success });
-                    } catch (err: unknown) {
-                        setStatus({
-                            buttonState: buttonStates.failed,
-                            errorMsg: handleLoginError(err),
-                        });
-                    } finally {
-                        setSubmitting(false);
-                    }
-                }}
-            >
-                {({ handleSubmit, status }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <Field name="name">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group className="mb-3" controlId="formBasicName">
-                                    <Form.Label>Imię</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="name">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        <Field name="email">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group className="mb-3" controlId="formBasicEmail">
-                                    <Form.Label>Adres email</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="email">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        <Field name="password">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label>Hasło</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="password">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        <Field name="retypedPassword">
-                            {({ field, meta }: FieldProps) => (
-                                <Form.Group
-                                    className="mb-3"
-                                    controlId="formBasicRetypedPassword"
-                                >
-                                    <Form.Label>Powtórz hasło</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        {...field}
-                                        isInvalid={meta.touched && meta.error !== null}
-                                    />
-                                    <ErrorMessage name="retypedPassword">
-                                        {(msg) => (
-                                            <Form.Control.Feedback type="invalid">
-                                                {msg}
-                                            </Form.Control.Feedback>
-                                        )}
-                                    </ErrorMessage>
-                                </Form.Group>
-                            )}
-                        </Field>
-
-                        {status?.errorMsg && (
-                            <Alert variant="danger">{status.errorMsg}</Alert>
+                try {
+                    const userData = await login({
+                        email: values.email,
+                        password: values.password,
+                    }).unwrap();
+                    dispatch(setCredentials(userData));
+                    setStatus({ buttonState: buttonStates.success });
+                } catch (err: unknown) {
+                    setStatus({
+                        buttonState: buttonStates.failed,
+                        errorMsg: handleLoginError(err),
+                    });
+                } finally {
+                    setSubmitting(false);
+                }
+            }}
+        >
+            {({ handleSubmit, status }) => (
+                <Form onSubmit={handleSubmit}>
+                    <Field name="name">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group className="mb-3" controlId="formBasicName">
+                                <Form.Label>Imię</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="name">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
                         )}
+                    </Field>
 
-                        <MultiStateButton
-                            state={status?.buttonState?.state || buttonStates.default.state}
-                            type="submit"
-                        >
-                            {status?.buttonState?.msg || buttonStates.default.msg}
-                        </MultiStateButton>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+                    <Field name="email">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>Adres email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="email">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
+                        )}
+                    </Field>
+
+                    <Field name="password">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label>Hasło</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="password">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
+                        )}
+                    </Field>
+
+                    <Field name="retypedPassword">
+                        {({ field, meta }: FieldProps) => (
+                            <Form.Group
+                                className="mb-3"
+                                controlId="formBasicRetypedPassword"
+                            >
+                                <Form.Label>Powtórz hasło</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    {...field}
+                                    isInvalid={meta.touched && meta.error !== null}
+                                />
+                                <ErrorMessage name="retypedPassword">
+                                    {(msg) => (
+                                        <Form.Control.Feedback type="invalid">
+                                            {msg}
+                                        </Form.Control.Feedback>
+                                    )}
+                                </ErrorMessage>
+                            </Form.Group>
+                        )}
+                    </Field>
+
+                    {status?.errorMsg && (
+                        <Alert variant="danger">{status.errorMsg}</Alert>
+                    )}
+
+                    <MultiStateButton
+                        state={status?.buttonState?.state || buttonStates.default.state}
+                        type="submit"
+                    >
+                        {status?.buttonState?.msg || buttonStates.default.msg}
+                    </MultiStateButton>
+                </Form>
+            )}
+        </Formik>
     );
 };
 
