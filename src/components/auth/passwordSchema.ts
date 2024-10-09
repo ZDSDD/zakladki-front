@@ -1,35 +1,34 @@
 import * as Yup from 'yup';
 
-const passwordSchema = Yup.string()
-    .min(8, "Hasło musi mieć co najmniej 8 znaków")
-    .matches(/[A-Z]/, "Hasło musi zawierać przynajmniej jedną wielką literę")
-    .matches(/[a-z]/, "Hasło musi zawierać przynajmniej jedną małą literę")
-    .matches(/[0-9]/, "Hasło musi zawierać przynajmniej jedną cyfrę")
-    .matches(/[^A-Za-z0-9]/, "Hasło musi zawierać przynajmniej jeden znak specjalny")
-    .test('password-strength', 'Hasło jest zbyt słabe', function (value) {
-        if (!value) return true; // Let required handle empty values
+// Define password rules in a reusable object
+const passwordRules = [
+    { regex: /.{10,}/, message: "Hasło musi mieć co najmniej 10 znaków", score: 3 },
+    { regex: /[A-Z]/, message: "Hasło musi zawierać przynajmniej jedną wielką literę", score: 1 },
+    { regex: /[a-z]/, message: "Hasło musi zawierać przynajmniej jedną małą literę", score: 1 },
+    { regex: /[0-9]/, message: "Hasło musi zawierać przynajmniej jedną cyfrę", score: 1 },
+    { testFunc: (password: string) => (password.match(/[^A-Za-z0-9]/g) || []).length >= 3, message: "Hasło musi zawierać przynajmniej trzy znaki specjalne", score: 3 }
+];
 
-        let score = 0;
-        if (value.length >= 8) score++;
-        if (/[A-Z]/.test(value)) score++;
-        if (/[a-z]/.test(value)) score++;
-        if (/[0-9]/.test(value)) score++;
-        if (/[^A-Za-z0-9]/.test(value)) score++;
+let passwordSchema = Yup.string().required("Hasło jest wymagane");
 
-        let strength = '';
-        if (score === 5) strength = 'Bardzo silne';
-        else if (score === 4) strength = 'Silne';
-        else if (score === 3) strength = 'Umiarkowane';
-        else if (score === 2) strength = 'Słabe';
-        else strength = 'Bardzo słabe';
-
-        // You can access this in your form component
-        this.parent.passwordStrength = strength;
-
-        // Consider the password valid if it's at least moderately strong
-        return score >= 3;
-    })
-    .required("Hasło jest wymagane");
-
+passwordRules.forEach(rule => {
+    if (rule.regex) {
+        passwordSchema = passwordSchema.matches(rule.regex, rule.message)
+    } else if (rule.testFunc) {
+        passwordSchema = passwordSchema.test("custom-rule", rule.message, pass => rule.testFunc(pass || ""))
+    }
+});
+const maxScore = passwordRules.reduce((acc, x) => acc + x.score, 0)
+// Calculate password strength using the same rules
+const calculatePasswordStrength = (password: string): number => {
+    let score = 0;
+    passwordRules.forEach(rule => {
+        if (rule.regex && rule.regex.test(password)) score += rule.score;
+        else if (rule.testFunc && rule.testFunc(password)) score += rule.score;
+    });
+    return score; // Returns score from 0 to 5
+};
 
 export default passwordSchema;
+export { calculatePasswordStrength };
+export { maxScore }
