@@ -19,9 +19,3 @@ export interface LoginCredentials {
     email: string;
     password: string;
 }
-
-export interface GoogleLoginResponse {
-    clientId: string;
-    credential: string;
-    select_by: string;
-}

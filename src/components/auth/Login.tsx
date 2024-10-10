@@ -8,6 +8,7 @@ import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
+import { LoginResponse } from "@/types/auth";
 
 interface LoginProps {
     className?: string;
@@ -69,7 +70,7 @@ const Login: React.FC<LoginProps> = () => {
                 setStatus({ buttonState: buttonStates.loading });
 
                 try {
-                    const userData = await login({
+                    const userData: LoginResponse = await login({
                         email: values.email,
                         password: values.password,
                     }).unwrap();

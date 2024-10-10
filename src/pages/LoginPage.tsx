@@ -1,12 +1,18 @@
 import { useState, useMemo } from "react";
 import Login from "@/components/auth/Login";
 import Register from "@/components/auth/Register";
+import { setCredentials } from "@/store";
 
 import { GoogleLogin } from '@react-oauth/google';
+import { LoginResponse } from "@/types/auth";
+import { useDispatch } from "react-redux";
+
+
 const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
 
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
+    const dispatch = useDispatch();
 
     const FormComponent = useMemo(() => {
         return isRegistering ? Register : Login;
@@ -29,8 +35,30 @@ function LoginPage() {
             </button>
             <div className="mt-2 shadow-xl">
                 <GoogleLogin
-                    onSuccess={credentialResponse => {
-                        console.log(credentialResponse);
+                    onSuccess={async credentialResponse => {
+                        try {
+                            const response = await fetch("http://localhost:8080/api/users/google",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(credentialResponse)
+                                }
+                            )
+                            if (!response.ok) {
+                                throw new Error(`response status: ${response.status}`)
+                            }
+                            const loginResponse: LoginResponse = await response.json();
+                            dispatch(setCredentials(loginResponse))
+                        }
+                        catch (error: unknown) {
+                            if (typeof error === "string") {
+                                console.log(error.toLowerCase())
+                            } else if (error instanceof Error) {
+                                console.log((error as Error).message)
+                            }
+                        }
                     }}
                     onError={() => {
                         console.log('Login Failed');
