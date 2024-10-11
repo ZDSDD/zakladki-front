@@ -43,7 +43,7 @@ function LoginPage() {
                                     headers: {
                                         "Content-Type": "application/json",
                                     },
-                                    body: JSON.stringify(credentialResponse)
+                                    body: JSON.stringify({ token: credentialResponse.credential }),
                                 }
                             )
                             if (!response.ok) {
