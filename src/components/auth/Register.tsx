@@ -10,7 +10,7 @@ import { ButtonState } from "../MultistateButton";
 import passSchema, { calculatePasswordStrength, maxScore } from "./passwordSchema"
 
 interface RegisterProps {
-    className?: string;
+    onAuthSuccess: () => void;
 }
 
 interface RegisterButtonState {
@@ -25,7 +25,7 @@ const buttonStates: Record<string, RegisterButtonState> = {
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Register: React.FC<RegisterProps> = () => {
+const Register: React.FC<RegisterProps> = ({ onAuthSuccess }) => {
     const [register] = useRegisterMutation();
     const [passwordScore, setPasswordScore] = useState<number>(0);
 
@@ -104,8 +104,9 @@ const Register: React.FC<RegisterProps> = () => {
                         email: values.email,
                         password: values.password,
                     }).unwrap();
-                    console.log(userData)
+                    console.log(userData);
                     setStatus({ buttonState: buttonStates.success });
+                    onAuthSuccess();
                 } catch (err: unknown) {
                     setStatus({
                         buttonState: buttonStates.failed,

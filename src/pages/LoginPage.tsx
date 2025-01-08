@@ -1,32 +1,37 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Login from "@/components/auth/Login";
 import Register from "@/components/auth/Register";
 import { setCredentials } from "@/store";
-
 import { GoogleLogin } from '@react-oauth/google';
 import { LoginResponse } from "@/types/auth";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
-
-const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
+// const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
 
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const user = useSelector((state: any) => state.user);
 
-    const FormComponent = useMemo(() => {
-        return isRegistering ? Register : Login;
-    }, [isRegistering]);
+    useEffect(() => {
+        if (user?.token) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
+    const FormComponent = useMemo(() => (isRegistering ? Register : Login), [isRegistering]);
     const toggleText = isRegistering
         ? "Masz już konto? Zaloguj się"
         : "Nie masz konta? Zarejestruj się";
-    const navigate = useNavigate();
+
     return (
         <div className="flex pt-10 items-center flex-col min-h-screen bg-gray-100">
             <div className="border m-1 p-6 rounded-lg shadow-lg bg-white min-w-96">
-                <FormComponent className={formStyles} />
+                <FormComponent
+                    onAuthSuccess={() => navigate('/')}
+                />
             </div>
             <button
                 className="mt-4 text-blue-600 hover:underline transition-colors duration-300"
@@ -40,32 +45,19 @@ function LoginPage() {
                         try {
                             const response = await fetch("http://localhost:8080/api/users/google", {
                                 method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ token: credentialResponse.credential }),
                             });
 
-                            if (!response.ok) {
-                                throw new Error(`response status: ${response.status}`);
-                            }
-
+                            if (!response.ok) throw new Error(`response status: ${response.status}`);
                             const loginResponse: LoginResponse = await response.json();
                             dispatch(setCredentials(loginResponse));
-
-                            // Redirect to home page using react-router
                             navigate('/');
                         } catch (error: unknown) {
-                            if (typeof error === "string") {
-                                console.log(error.toLowerCase());
-                            } else if (error instanceof Error) {
-                                console.log((error as Error).message);
-                            }
+                            console.error(error instanceof Error ? error.message : error);
                         }
                     }}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
+                    onError={() => console.error('Google Login Failed')}
                 />
             </div>
         </div>

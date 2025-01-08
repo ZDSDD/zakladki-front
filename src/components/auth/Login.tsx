@@ -12,6 +12,7 @@ import { LoginResponse } from "@/types/auth";
 
 interface LoginProps {
     className?: string;
+    onAuthSuccess: () => void;
 }
 
 interface LoginButtonState {
@@ -26,7 +27,7 @@ const buttonStates: Record<string, LoginButtonState> = {
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Login: React.FC<LoginProps> = () => {
+const Login: React.FC<LoginProps> = ({ className, onAuthSuccess }) => {
     const dispatch = useDispatch();
     const [login] = useLoginMutation();
 
@@ -74,9 +75,17 @@ const Login: React.FC<LoginProps> = () => {
                         email: values.email,
                         password: values.password,
                     }).unwrap();
+
+                    // SUCCESS
+
                     dispatch(setCredentials(userData));
                     setStatus({ buttonState: buttonStates.success });
+                    onAuthSuccess();
+
                 } catch (err: unknown) {
+
+                    // FAIL
+
                     setStatus({
                         buttonState: buttonStates.failed,
                         errorMsg: handleLoginError(err),
@@ -96,7 +105,7 @@ const Login: React.FC<LoginProps> = () => {
                                     type="email"
                                     placeholder="Wprowadź email"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.error ? meta.error.length > 0 : false}
                                 />
                                 <ErrorMessage name="email">
                                     {(msg) => (
@@ -117,7 +126,7 @@ const Login: React.FC<LoginProps> = () => {
                                     type="password"
                                     placeholder="Hasło"
                                     {...field}
-                                    isInvalid={meta.touched && meta.error !== null}
+                                    isInvalid={meta.error ? meta.error.length > 0 : false}
                                 />
                                 <ErrorMessage name="password">
                                     {(msg) => (
