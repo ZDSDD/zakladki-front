@@ -6,6 +6,7 @@ import { setCredentials } from "@/store";
 import { GoogleLogin } from '@react-oauth/google';
 import { LoginResponse } from "@/types/auth";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 
 const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
@@ -21,7 +22,7 @@ function LoginPage() {
     const toggleText = isRegistering
         ? "Masz już konto? Zaloguj się"
         : "Nie masz konta? Zarejestruj się";
-
+    const navigate = useNavigate();
     return (
         <div className="flex pt-10 items-center flex-col min-h-screen bg-gray-100">
             <div className="border m-1 p-6 rounded-lg shadow-lg bg-white min-w-96">
@@ -35,28 +36,30 @@ function LoginPage() {
             </button>
             <div className="mt-2 shadow-xl">
                 <GoogleLogin
-                    onSuccess={async credentialResponse => {
+                    onSuccess={async (credentialResponse) => {
                         try {
-                            const response = await fetch("http://localhost:8080/api/users/google",
-                                {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({ token: credentialResponse.credential }),
-                                }
-                            )
+                            const response = await fetch("http://localhost:8080/api/users/google", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ token: credentialResponse.credential }),
+                            });
+
                             if (!response.ok) {
-                                throw new Error(`response status: ${response.status}`)
+                                throw new Error(`response status: ${response.status}`);
                             }
+
                             const loginResponse: LoginResponse = await response.json();
-                            dispatch(setCredentials(loginResponse))
-                        }
-                        catch (error: unknown) {
+                            dispatch(setCredentials(loginResponse));
+
+                            // Redirect to home page using react-router
+                            navigate('/');
+                        } catch (error: unknown) {
                             if (typeof error === "string") {
-                                console.log(error.toLowerCase())
+                                console.log(error.toLowerCase());
                             } else if (error instanceof Error) {
-                                console.log((error as Error).message)
+                                console.log((error as Error).message);
                             }
                         }
                     }}
