@@ -7,13 +7,11 @@ import { setCredentials } from "@/store";
 import { GoogleLogin } from '@react-oauth/google';
 import { LoginResponse } from "@/types/auth";
 
-// const formStyles = "border border-slate-200 shadow-[5px_5px_30px_-15px_rgba(0,0,0,0.3)]";
-
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const user = useSelector((state: any) => state.user);
+    const user = useSelector((state: { user: { token: string } }) => state.user);
 
     useEffect(() => {
         if (user?.token) {
