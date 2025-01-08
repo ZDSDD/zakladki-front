@@ -27,7 +27,7 @@ const buttonStates: Record<string, LoginButtonState> = {
     success: { state: "success", msg: "Sukces!" },
 };
 
-const Login: React.FC<LoginProps> = ({ className, onAuthSuccess }) => {
+const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
     const dispatch = useDispatch();
     const [login] = useLoginMutation();
 
