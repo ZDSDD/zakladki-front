@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
+import { logOut } from "@/reducers/authSlice"; // Updated to match your action name
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,6 +14,13 @@ import { Settings, User, LogOut } from "lucide-react";
 
 const Navbar = () => {
     const user = useSelector((state: RootState) => state.auth.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logOut()); // Updated to match your action name
+        navigate('/');
+    };
 
     return (
         <nav className="shadow-md sticky top-0 z-50 w-full border-b border-green-500 bg-background/30 backdrop:blur supports-[backdrop-filter]:bg-background/80">
@@ -47,7 +55,10 @@ const Navbar = () => {
                                     <Link to="/settings">Settings</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="cursor-pointer text-red-600">
+                                <DropdownMenuItem
+                                    className="cursor-pointer text-red-600"
+                                    onClick={handleLogout}
+                                >
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Logout</span>
                                 </DropdownMenuItem>
