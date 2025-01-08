@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";  // Import the RootState type from your store
-import "./navbar.css";
 
 const Navbar = () => {
     const user = useSelector((state: RootState) => state.auth.user);  // Access user from authSlice
