@@ -5,7 +5,7 @@ import { LoginResponse, LoginCredentials, User } from "@/types/auth";
 import { setCredentials, logOut } from "@/reducers/authSlice";
 import { RegisterPayload, RegisterResponse } from "@/types/register";
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/users",
+    baseUrl: import.meta.env.VITE_BACKEND_API_URL + "/users",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;

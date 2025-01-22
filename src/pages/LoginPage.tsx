@@ -41,7 +41,7 @@ function LoginPage() {
                 <GoogleLogin
                     onSuccess={async (credentialResponse) => {
                         try {
-                            const response = await fetch("http://localhost:8080/api/users/google", {
+                            const response = await fetch(import.meta.env.VITE_BACKEND_API_URL + "/users/google", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ token: credentialResponse.credential }),
