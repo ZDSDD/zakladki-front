@@ -1,0 +1,13 @@
+.fraunces-nice {
+    font-family: "Fraunces", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings:
+        "SOFT" 0,
+        "WONK" 0;
+}
+
+body {
+    font-family: 'Fraunces', serif;
+}
