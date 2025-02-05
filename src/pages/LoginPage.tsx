@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import "./loginPage.css"
 
 declare global {
     interface Window {

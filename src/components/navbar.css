@@ -1,0 +1,17 @@
+.navbar {
+    display: flex;
+    padding-inline: 3rem;
+    justify-content: space-between;
+}
+
+.navbar .middle {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    padding: 5px;
+    padding-inline: 30px;
+}
+
+.navbar .middle a:hover {
+    text-shadow: 1px 1px 5px #0000004d;
+}

@@ -1,14 +1,31 @@
 @import "tailwindcss";
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
 
-/* ... */
-
-* {
-    a {
-        text-decoration: none;
-        color: inherit;
-    }
+.fraunces-nice {
+    font-family: "Fraunces", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings:
+        "SOFT" 0,
+        "WONK" 0;
 }
 
-body {}
+body {
+    font-family: 'Fraunces', serif;
+
+    background: linear-gradient(to bottom, #faffe3, #ffe4ec, #fff4c1);
+    /* background-color: blue; */
+    background-blend-mode: overlay;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    max-width: 1536px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
