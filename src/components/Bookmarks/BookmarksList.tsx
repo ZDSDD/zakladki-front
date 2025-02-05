@@ -1,4 +1,4 @@
-import { useFetchBookmarksQuery } from "../../store";
+import { useFetchBookmarksQuery } from "../../store/store";
 import { Bookmark } from "../../types/bookmark"; // Assuming you put the type in a separate file named `types.ts`
 import BookmarkListItem from "./BookmarkListItem";
 

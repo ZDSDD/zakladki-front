@@ -1,20 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { RootState } from "@/store";
-import { LoginResponse, LoginCredentials, User } from "@/types/auth";
-import { setCredentials, logOut } from "@/reducers/authSlice";
+import { LoginResponse, LoginCredentials } from "@/types/auth";
 import { RegisterPayload, RegisterResponse } from "@/types/register";
+import { useAuthStore } from '@/store/authStore';
+
 const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_API_URL + "/users",
     credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).auth.token;
+    prepareHeaders: (headers) => {
+        const token = useAuthStore.getState().token;
         if (token) {
-            console.log("Token is present, set header with bearer");
-
             headers.set("authorization", `Bearer ${token}`);
-        } else {
-            console.log("NO TOKEN FOUND :(");
         }
         return headers;
     },
@@ -28,23 +24,19 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     let result = await baseQuery(args, api, extraOptions);
 
     if (result?.error?.status === 401) {
-        // Try to get a new token
-        console.log("trying to get new token");
         const refreshResult = await baseQuery(
             { url: "refresh", method: "POST" },
             api,
             extraOptions,
         );
         if (refreshResult?.data) {
-            const user = (api.getState() as RootState).auth.user as User;
+            const user = useAuthStore.getState().user;
             // Store the new token
-            api.dispatch(
-                setCredentials({ user, token: refreshResult.data as string }),
-            );
+            useAuthStore.getState().setCredentials(user!, refreshResult.data as string);
             // Retry the original query with new token
             result = await baseQuery(args, api, extraOptions);
         } else {
-            api.dispatch(logOut());
+            useAuthStore.getState().logOut();
         }
     }
 

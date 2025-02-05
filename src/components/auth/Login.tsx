@@ -1,14 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/store/apis/authApi";
-import { setCredentials } from "@/reducers/authSlice";
 import { Form, Alert } from "react-bootstrap";
 import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
 import { LoginResponse } from "@/types/auth";
+import { useAuthStore } from '@/store/authStore';
 
 interface LoginProps {
     className?: string;
@@ -28,7 +27,7 @@ const buttonStates: Record<string, LoginButtonState> = {
 };
 
 const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
-    const dispatch = useDispatch();
+    const setCredentials = useAuthStore(state => state.setCredentials);
     const [login] = useLoginMutation();
 
     const validationSchema = Yup.object().shape({
@@ -78,7 +77,7 @@ const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
 
                     // SUCCESS
 
-                    dispatch(setCredentials(userData));
+                    setCredentials(userData.user, userData.token);
                     setStatus({ buttonState: buttonStates.success });
                     onAuthSuccess();
 
