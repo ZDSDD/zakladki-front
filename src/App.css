@@ -10,4 +10,10 @@
 
 body {
     font-family: 'Fraunces', serif;
+
+    background: linear-gradient(to bottom, #faffe3, #ffe4ec, #fff4c1);
+    background-blend-mode: overlay;
+    background-repeat: no-repeat;
+    min-width: 100vw;
+    min-height: 100vh;
 }

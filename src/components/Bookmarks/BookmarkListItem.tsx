@@ -1,22 +1,35 @@
 import { Bookmark } from "../../types/bookmark";
-import SkewImage from "./SkewImage";
-import "./Bookmark.css";
+import { useState } from "react";
+import { Placeholder } from "react-bootstrap";
 interface BookmarkListItemProps {
     bookmark: Bookmark;
     className?: string;
 }
 function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
     const inStock: boolean = bookmark.AvailableAmount > 0;
-
+    const [isLoaded, setIsLoaded] = useState(false);
     return (
-        <div className={`${className} border w-[200px] h-[600px] m-1 flex flex-col`}>
-            <SkewImage
-                src={bookmark.ImageUrl}
-                alt={bookmark.Name}
-                className="hover:cursor-pointer hover:drop-shadow-lg"
-                maxRotation={12}
-            />
-            <div className="px-2 flex-grow flex flex-col justify-between h-[55px] ">
+        <div className={`${className} flex flex-col rounded-md`}>
+            <div
+                className={`relative m-1 flex`}
+            >
+
+                {!isLoaded && (
+                    <div className="w-[200px] h-[400px]">
+                        <Placeholder animation="glow" className="w-full h-full">
+                            <Placeholder className="w-full h-full" bg="secondary" />
+                        </Placeholder>
+                    </div>
+
+                )}
+                <img
+                    src={bookmark.ImageUrl}
+                    alt={bookmark.Name}
+                    className={`transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0 h-[0px]"}`}
+                    onLoad={() => setIsLoaded(true)}
+                />
+            </div>
+            <div className="px-2 border-t-2 border-lime-500 bg-slate-200 rounded-md flex-grow flex flex-col justify-between h-[55px] ">
                 {/* Text container with fixed height and overflow handling */}
                 <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                     {bookmark.Name}

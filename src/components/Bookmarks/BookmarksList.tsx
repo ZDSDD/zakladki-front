@@ -21,12 +21,12 @@ function BookmarksList() {
         }
 
         return (
-            <div className="p-2 m-3 border border-blue-500 flex flex-wrap gap-1 rounded-sm">
+            <div className="p-2 flex flex-wrap gap-2">
                 {data.map((bookmark: Bookmark) => (
                     <BookmarkListItem
                         key={bookmark.ID}
                         bookmark={bookmark}
-                        className="border w-[200px] h-auto m-1 hover:cursor-pointer rounded-md"
+                        className="hover:cursor-pointer rounded-md"
                     ></BookmarkListItem>
                 ))}
             </div>
@@ -34,7 +34,7 @@ function BookmarksList() {
     };
 
     return (
-        <div className="border m-3">
+        <div className="m-3">
             <h1 className="text-xl font-bold mb-4">Bookmarks</h1>
             {renderContent()}
         </div>

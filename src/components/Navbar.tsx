@@ -22,20 +22,26 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="shadow-md sticky top-0 z-50 w-full border-b border-green-500 bg-background/30 backdrop:blur supports-[backdrop-filter]:bg-background/80">
-            <div className="w-full px-4 grid h-12 items-center grid-cols-[auto_auto_1fr]">
+        <nav className="top-0 z-50 w-full mt-3">
+            <div className="w-full px-4 flex justify-between h-12 items-center">
                 {/* Left side links: About and Dziennik Nudziary */}
                 <div className="flex items-center space-x-5">
                     <Link className="text-2xl font-bold text-slate-900" to="/">
                         Dziennik Nudziary
                     </Link>
+
+                </div>
+                {/* Centered (optional) */}
+                <div className="drop-shadow-lg gap-3 flex justify-center items-center bg-red-200 rounded-2xl pl-4 pr-4 py-2 border-1">
                     <Link className="hover:text-green-600 transition-colors duration-500" to="/about">
                         About
                     </Link>
-                </div>
-                {/* Centered (optional) */}
-                <div className="flex justify-center items-center">
-                    {/* Optional Center Content */}
+                    <Link className="hover:text-green-600 transition-colors duration-500" to="/about">
+                        My instagram
+                    </Link>
+                    <Link className="hover:text-green-600 transition-colors duration-500" to="/about">
+                        My TikTok
+                    </Link>
                 </div>
                 {/* Right side login/welcome with dropdown */}
                 <div className="flex justify-end items-center">
