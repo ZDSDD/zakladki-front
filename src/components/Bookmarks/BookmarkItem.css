@@ -1,0 +1,12 @@
+.bookmark {
+    border: 1px solid #ccc;
+}
+
+.bookmark img {
+    width: 100%;
+}
+
+.bookmark-description {
+    /* padding: 1rem; */
+    border-top: 1px solid #ccc;
+}

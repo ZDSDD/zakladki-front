@@ -21,12 +21,12 @@ function BookmarksList() {
         }
 
         return (
-            <div className="p-2 flex flex-wrap gap-2">
+            <div className="p-2 flex flex-wrap gap-2 items-center justify-center">
                 {data.map((bookmark: Bookmark) => (
                     <BookmarkListItem
                         key={bookmark.ID}
                         bookmark={bookmark}
-                        className="hover:cursor-pointer rounded-md"
+                        className="hover:cursor-pointer"
                     ></BookmarkListItem>
                 ))}
             </div>
