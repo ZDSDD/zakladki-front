@@ -4,6 +4,7 @@ import { Placeholder } from "react-bootstrap";
 import "./BookmarkItem.css"
 import { BsBasket } from "react-icons/bs";
 import { BsBookmarkHeart, BsBookmarkHeartFill } from "react-icons/bs";
+import { useLikeStore } from "@/store/BookmarksLikesStore"
 
 interface BookmarkListItemProps {
     bookmark: Bookmark;
@@ -13,6 +14,17 @@ interface BookmarkListItemProps {
 function BookmarkListItem({ bookmark, className = "", isLikedByUser = false }: BookmarkListItemProps) {
     const inStock: boolean = bookmark.AvailableAmount > 0;
     const [isLoaded, setIsLoaded] = useState(false);
+    const { likeBookmark, unlikeBookmark } = useLikeStore()
+
+    function handleUnlike(event: React.MouseEvent<SVGElement>): void {
+        event.stopPropagation();
+        unlikeBookmark(bookmark.ID);
+    }
+
+    function handleLike(event: React.MouseEvent<SVGElement>): void {
+        event.stopPropagation();
+        likeBookmark(bookmark.ID);
+    }
     return (
         <div className={`${className} w-[150px] h-[300px] sm:w-[200px] sm:h-[400px] bookmark flex flex-col-reverse border-1 rounded-md bg-white`}>
             <div className="bookmark-description m-1 bg-slate-100 flex-grow flex flex-col justify-between">
@@ -50,8 +62,8 @@ function BookmarkListItem({ bookmark, className = "", isLikedByUser = false }: B
                     }}>
                         {
                             isLikedByUser
-                                ? <BsBookmarkHeartFill className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" />
-                                : <BsBookmarkHeart className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" />
+                                ? <BsBookmarkHeartFill className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" onClick={handleUnlike} />
+                                : <BsBookmarkHeart className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" onClick={handleLike} />
                         }
                     </div>
                     <div className="absolute bottom-2 right-2 flex items-center justify-center bg-black/30 hover:bg-black/80 hover:cursor-pointer bg-alga w-10 h-10 rounded-xl">

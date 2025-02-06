@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Bookmark } from "../../types/bookmark"; // Assuming you put the type in a separate file named `types.ts`
 import BookmarkListItem from "./BookmarkListItem";
 import { useBookmarksStore } from "@/store/BookmarksStore";
+import { useLikeStore } from "@/store/BookmarksLikesStore"
 
 function BookmarksList() {
-    const { bookmarks, likedBookmarks, fetchBookmarks, fetchLikedBookmarks } = useBookmarksStore();
+    const { bookmarks, fetchBookmarks } = useBookmarksStore();
+    const { likedBookmarks, fetchLikedBookmarks } = useLikeStore();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     useEffect(() => {
