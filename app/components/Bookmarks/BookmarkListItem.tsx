@@ -23,8 +23,13 @@ function BookmarkListItem({ bookmark, className = "", isLikedByUser = false }: B
 
     function handleLike(event: React.MouseEvent<SVGElement>): void {
         event.stopPropagation();
-        likeBookmark(bookmark.ID);
+        likeBookmark(bookmark.ID).then(() => { }).catch((error) => {
+            if (error instanceof Error && error.message === "User not authenticated") {
+                alert("You need to be logged in to like a bookmark");
+            }
+        });
     }
+
     return (
         <div className={`${className} w-[150px] h-[300px] sm:w-[200px] sm:h-[400px] bookmark flex flex-col-reverse border-1 rounded-md bg-white`}>
             <div className="bookmark-description m-1 bg-slate-100 flex-grow flex flex-col justify-between">
@@ -62,7 +67,7 @@ function BookmarkListItem({ bookmark, className = "", isLikedByUser = false }: B
                     }}>
                         {
                             isLikedByUser
-                                ? <BsBookmarkHeartFill className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" onClick={handleUnlike} />
+                                ? <BsBookmarkHeartFill className="text-3xl text-pink-600/15 hover:text-pink-600 hover:cursor-pointer" onClick={handleUnlike} />
                                 : <BsBookmarkHeart className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" onClick={handleLike} />
                         }
                     </div>
