@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import Login from "@/components/auth/Login";
 import Register from "@/components/auth/Register";
 import { LoginResponse } from "@/types/auth";

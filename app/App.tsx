@@ -1,7 +1,7 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Root from "./pages/Root";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import { createBrowserRouter, RouterProvider, useLocation } from "react-router";
+import Root from "./routes/Root";
+import HomePage from "./routes/HomePage";
+import LoginPage from "./routes/LoginPage";
 
 const router = createBrowserRouter([
     {
@@ -25,7 +25,9 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-    return <RouterProvider router={router}></RouterProvider>;
+    return (
+        <RouterProvider router={router}></RouterProvider>
+    )
 }
 
 export default App;

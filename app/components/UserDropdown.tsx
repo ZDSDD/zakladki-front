@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, Transition } from "@headlessui/react";
+import { Link } from "react-router";
+import { Menu, Transition, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { User, Settings, LogOut } from "lucide-react";
 
 export default function UserDropdown({ user, handleLogout }: { user: { name: string } | null, handleLogout: () => void }) {
@@ -8,9 +7,9 @@ export default function UserDropdown({ user, handleLogout }: { user: { name: str
         <div className="flex justify-end items-center">
             {user ? (
                 <Menu as="div" className="relative">
-                    <Menu.Button className="hover:text-green-600 transition-colors duration-300 outline-none">
+                    <MenuButton className="hover:text-green-600 transition-colors duration-300 outline-none">
                         Hello, {user.name}
-                    </Menu.Button>
+                    </MenuButton>
                     <Transition
                         enter="transition-opacity duration-200"
                         enterFrom="opacity-0"
@@ -19,45 +18,45 @@ export default function UserDropdown({ user, handleLogout }: { user: { name: str
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <Menu.Items className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
-                            <Menu.Item>
-                                {({ active }) => (
+                        <MenuItems className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
+                            <MenuItem>
+                                {({ focus }) => (
                                     <Link
                                         to="/profile"
-                                        className={`flex items-center px-4 py-2 text-sm ${active ? "bg-gray-100" : ""
+                                        className={`flex items-center px-4 py-2 text-sm ${focus ? "bg-gray-100" : ""
                                             }`}
                                     >
                                         <User className="mr-2 h-4 w-4" />
                                         Profile
                                     </Link>
                                 )}
-                            </Menu.Item>
-                            <Menu.Item>
-                                {({ active }) => (
+                            </MenuItem>
+                            <MenuItem>
+                                {({ focus }) => (
                                     <Link
                                         to="/settings"
-                                        className={`flex items-center px-4 py-2 text-sm ${active ? "bg-gray-100" : ""
+                                        className={`flex items-center px-4 py-2 text-sm ${focus ? "bg-gray-100" : ""
                                             }`}
                                     >
                                         <Settings className="mr-2 h-4 w-4" />
                                         Settings
                                     </Link>
                                 )}
-                            </Menu.Item>
+                            </MenuItem>
                             <div className="border-t border-gray-200"></div>
-                            <Menu.Item>
-                                {({ active }) => (
+                            <MenuItem>
+                                {({ focus }) => (
                                     <button
                                         onClick={handleLogout}
-                                        className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${active ? "bg-gray-100" : ""
+                                        className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${focus ? "bg-gray-100" : ""
                                             }`}
                                     >
                                         <LogOut className="mr-2 h-4 w-4" />
                                         Logout
                                     </button>
                                 )}
-                            </Menu.Item>
-                        </Menu.Items>
+                            </MenuItem>
+                        </MenuItems>
                     </Transition>
                 </Menu>
             ) : (
