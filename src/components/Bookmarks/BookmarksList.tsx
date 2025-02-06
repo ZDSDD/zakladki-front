@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Bookmark } from "../../types/bookmark"; // Assuming you put the type in a separate file named `types.ts`
 import BookmarkListItem from "./BookmarkListItem";
-import useBookmarksStore from "@/store/apis/bookmarksApi";
+import useBookmarksStore from "@/store/BookmarksStore";
 
 function BookmarksList() {
     const { bookmarks, isLoading, error, fetchBookmarks } = useBookmarksStore();
