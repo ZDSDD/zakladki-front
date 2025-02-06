@@ -38,21 +38,23 @@ function BookmarkListItem({ bookmark, className = "", isLikedByUser = false }: B
                     </div>
 
                 )}
-                <div className="m-1 border-1 bg-red-400 flex relative">
+                <div className="m-1 flex relative">
                     <img
                         src={bookmark.ImageUrl}
                         alt={bookmark.Name}
                         className="w-full h-auto"
                         onLoad={() => setIsLoaded(true)}
                     />
-                    <div className="absolute flex">
+                    <div className="absolute flex" onClick={() => {
+
+                    }}>
                         {
                             isLikedByUser
                                 ? <BsBookmarkHeartFill className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" />
                                 : <BsBookmarkHeart className="text-3xl text-black/15 hover:text-black hover:cursor-pointer" />
                         }
                     </div>
-                    <div className="absolute bottom-2 right-2 flex items-center justify-center bg-indigo-600/30 hover:bg-indigo-600/80 hover:cursor-pointer bg-alga w-10 h-10 rounded-full">
+                    <div className="absolute bottom-2 right-2 flex items-center justify-center bg-black/30 hover:bg-black/80 hover:cursor-pointer bg-alga w-10 h-10 rounded-xl">
                         <BsBasket className="text-2xl text-white" />
                     </div>
                 </div>
