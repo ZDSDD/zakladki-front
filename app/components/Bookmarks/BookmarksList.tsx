@@ -31,7 +31,6 @@ function BookmarksList() {
                     <BookmarkListItem
                         key={bookmark.ID}
                         bookmark={bookmark}
-                        className="hover:cursor-pointer"
                     ></BookmarkListItem>
                 ))}
             </div>
