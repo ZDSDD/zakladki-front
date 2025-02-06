@@ -26,10 +26,7 @@ function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
                     </span>
                 </div>
             </div>
-            <div
-                className={`relative flex`}
-            >
-
+            <div className={``}>
                 {!isLoaded && (
                     <div className="w-[200px] h-[400px]">
                         <Placeholder animation="glow" className="w-full h-full">
@@ -41,7 +38,7 @@ function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
                 <img
                     src={bookmark.ImageUrl}
                     alt={bookmark.Name}
-                    className={`m-1 transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0 h-[0px]"}`}
+                    className="m-1 w-[200px] h-[400px] object-cover"
                     onLoad={() => setIsLoaded(true)}
                 />
             </div>

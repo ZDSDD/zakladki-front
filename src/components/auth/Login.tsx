@@ -1,12 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
-import { useLoginMutation } from "@/store/apis/authApi";
 import { Form, Alert } from "react-bootstrap";
 import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
-import { LoginResponse } from "@/types/auth";
 import { useAuthStore } from '@/store/authStore';
 
 interface LoginProps {
@@ -27,8 +25,7 @@ const buttonStates: Record<string, LoginButtonState> = {
 };
 
 const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
-    const setCredentials = useAuthStore(state => state.setCredentials);
-    const [login] = useLoginMutation();
+    const { login } = useAuthStore();
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -37,28 +34,12 @@ const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
         password: Yup.string().required("Hasło jest wymagane"),
     });
 
-    const handleLoginError = (err: unknown): string => {
-        console.error("Failed to log in:", err);
-
-        if (err && typeof err === "object" && "status" in err) {
-            const error = err as { status: number; data?: { error?: string } };
-
-            switch (error.status) {
-                case 400:
-                    return error.data?.error || "Nieprawidłowe dane";
-                case 404:
-                    return "Użytkownik nie znaleziony";
-                case 401:
-                    return "Nieprawidłowe hasło";
-                case 500:
-                default:
-                    return "Wystąpił błąd po naszej stronie. Przepraszamy i spróbuj ponownie później.";
-            }
+    const handleLoginError = (err: Error | unknown) => {
+        if (err instanceof Error) {
+            return err.message;
         }
-
-        return "Wystąpił nieoczekiwany błąd";
-    };
-
+        return "Wystąpił nieznany błąd";
+    }
     return (
         <Formik
             initialValues={{
@@ -70,18 +51,14 @@ const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
                 setStatus({ buttonState: buttonStates.loading });
 
                 try {
-                    const userData: LoginResponse = await login({
-                        email: values.email,
-                        password: values.password,
-                    }).unwrap();
-
-                    // SUCCESS
-
-                    setCredentials(userData.user, userData.token);
+                    const loginSucc = await login(values);
+                    if (!loginSucc) {
+                        throw new Error("Failed to log in");
+                    }
                     setStatus({ buttonState: buttonStates.success });
                     onAuthSuccess();
 
-                } catch (err: unknown) {
+                } catch (err: Error | unknown) {
 
                     // FAIL
 

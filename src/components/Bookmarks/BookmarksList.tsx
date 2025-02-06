@@ -1,9 +1,14 @@
-import { useFetchBookmarksQuery } from "../../store/store";
+import { useEffect } from "react";
 import { Bookmark } from "../../types/bookmark"; // Assuming you put the type in a separate file named `types.ts`
 import BookmarkListItem from "./BookmarkListItem";
+import useBookmarksStore from "@/store/apis/bookmarksApi";
 
 function BookmarksList() {
-    const { data, error, isLoading } = useFetchBookmarksQuery(null);
+    const { bookmarks, isLoading, error, fetchBookmarks } = useBookmarksStore();
+
+    useEffect(() => {
+        fetchBookmarks();
+    }, []);
 
     const renderContent = () => {
         if (isLoading) {
@@ -16,13 +21,13 @@ function BookmarksList() {
             );
         }
 
-        if (!data || data.length === 0) {
+        if (!bookmarks || bookmarks.length === 0) {
             return <div className="text-gray-500">No bookmarks available.</div>; // Handle empty data
         }
 
         return (
             <div className="p-2 flex flex-wrap gap-2 items-center justify-center">
-                {data.map((bookmark: Bookmark) => (
+                {bookmarks.map((bookmark: Bookmark) => (
                     <BookmarkListItem
                         key={bookmark.ID}
                         bookmark={bookmark}

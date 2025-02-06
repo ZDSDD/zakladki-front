@@ -1,13 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Register.css"
 import React, { useState } from "react";
-import { useRegisterMutation } from "@/store/apis/authApi";
 import { Form, Alert } from "react-bootstrap";
 import { Formik, Field, ErrorMessage, FieldProps } from "formik";
 import * as Yup from "yup";
 import MultiStateButton from "../MultistateButton";
 import { ButtonState } from "../MultistateButton";
 import passSchema, { calculatePasswordStrength, maxScore } from "./passwordSchema"
+import { useAuthStore } from "@/store/authStore";
 
 interface RegisterProps {
     onAuthSuccess: () => void;
@@ -26,7 +26,7 @@ const buttonStates: Record<string, RegisterButtonState> = {
 };
 
 const Register: React.FC<RegisterProps> = ({ onAuthSuccess }) => {
-    const [register] = useRegisterMutation();
+    const { register } = useAuthStore();
     const [passwordScore, setPasswordScore] = useState<number>(0);
 
     const validationSchema = Yup.object().shape({
@@ -99,14 +99,20 @@ const Register: React.FC<RegisterProps> = ({ onAuthSuccess }) => {
                 setStatus({ buttonState: buttonStates.loading });
 
                 try {
-                    const userData = await register({
+                    const registerSuccess = await register({
                         name: values.name,
                         email: values.email,
                         password: values.password,
-                    }).unwrap();
-                    console.log(userData);
-                    setStatus({ buttonState: buttonStates.success });
-                    onAuthSuccess();
+                    })
+                    if (registerSuccess) {
+                        setStatus({ buttonState: buttonStates.success });
+                        onAuthSuccess();
+                    } else {
+                        setStatus({
+                            buttonState: buttonStates.failed,
+                            errorMsg: "Rejestracja nie powiodła się",
+                        });
+                    }
                 } catch (err: unknown) {
                     setStatus({
                         buttonState: buttonStates.failed,

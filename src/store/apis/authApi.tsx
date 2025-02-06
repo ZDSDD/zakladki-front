@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { LoginResponse, LoginCredentials } from "@/types/auth";
-import { RegisterPayload, RegisterResponse } from "@/types/register";
+import { RegisterPayload, RegisterResponse } from "@/types/auth";
 import { useAuthStore } from '@/store/authStore';
 
 const baseQuery = fetchBaseQuery({
@@ -66,4 +66,4 @@ export const authApi = createApi({
     }),
 });
 
-export const { useLoginMutation, useProtectedQuery, useRegisterMutation } = authApi;
+// export const { useLoginMutation, useProtectedQuery, useRegisterMutation } = authApi;
