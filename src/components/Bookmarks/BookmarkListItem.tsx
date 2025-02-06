@@ -26,7 +26,7 @@ function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
                     </span>
                 </div>
             </div>
-            <div className={``}>
+            <div className={`${isLoaded ? "flex" : ""}`}>
                 {!isLoaded && (
                     <div className="w-[200px] h-[400px]">
                         <Placeholder animation="glow" className="w-full h-full">
@@ -38,7 +38,7 @@ function BookmarkListItem({ bookmark, className = "" }: BookmarkListItemProps) {
                 <img
                     src={bookmark.ImageUrl}
                     alt={bookmark.Name}
-                    className="m-1 w-[200px] h-[400px] object-cover"
+                    className="m-1 w-[200px] h-[400px]"
                     onLoad={() => setIsLoaded(true)}
                 />
             </div>
