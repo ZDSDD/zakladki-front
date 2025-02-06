@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/authStore";
-import "./navbar.css"
 import UserDropdown from "./UserDropdown";
 
 const Navbar = () => {
@@ -15,9 +14,9 @@ const Navbar = () => {
 
     return (
         <nav className="top-0 z-50 mt-3 px-14">
-            <div className="navbar flex justify-between h-12 items-center">
+            <div className="flex flex-col md:flex-row text-nowrap h-12 items-center justify-between">
                 {/* Left side links: About and Dziennik Nudziary */}
-                <div className="flex items-center space-x-5">
+                <div className="flex justify-center md:justify-start">
                     <Link
                         className="text-2xl font-bold text-slate-900"
                         to="/"
@@ -27,7 +26,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Right side login/welcome with dropdown */}
-                <div className="flex justify-end items-center">
+                <div className="flex justify-center md:justify-end">
                     {user ? (
                         <UserDropdown
                             user={user}
@@ -36,7 +35,7 @@ const Navbar = () => {
                     ) : (
                         <Link
                             to="/login"
-                            className="hover:text-green-600 transition-colors duration-500 ml-5"
+                            className="hover: cursor-pointer"
                         >
                             Login
                         </Link>
