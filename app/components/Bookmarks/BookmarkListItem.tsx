@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { BsBasket, BsBookmarkHeart, BsBookmarkHeartFill } from "react-icons/bs";
 import { useLikeStore } from "@/store/BookmarksLikesStore";
 import { Bookmark } from "@/types/bookmark";
+import { useNavigate } from "react-router";
 
 interface BookmarkListItemProps {
     bookmark: Bookmark;
@@ -18,19 +19,12 @@ function BookmarkListItem({
     const [isLoaded, setIsLoaded] = useState(false);
     const [isCooldown, setIsCooldown] = useState(false);
     const { likeBookmark, unlikeBookmark } = useLikeStore();
+    const navigate = useNavigate(); // Renamed from `navigation`
 
     useEffect(() => {
-        let cooldownTimer: NodeJS.Timeout;
-
-        if (isCooldown) {
-            cooldownTimer = setTimeout(() => setIsCooldown(false), 3000);
-        }
-
-        return () => {
-            if (cooldownTimer) {
-                clearTimeout(cooldownTimer);
-            }
-        };
+        if (!isCooldown) return;
+        const cooldownTimer = setTimeout(() => setIsCooldown(false), 3000);
+        return () => clearTimeout(cooldownTimer);
     }, [isCooldown]);
 
     const handleLikeAction = async (
@@ -60,25 +54,27 @@ function BookmarkListItem({
         isLikedByUser ? (
             <BsBookmarkHeartFill
                 className={`text-3xl ${isCooldown ? "cursor-default" : "cursor-pointer"} 
-          text-pink-600/15 hover:text-pink-600 transition-colors duration-200`}
+                text-pink-600/15 hover:text-pink-600 transition-colors duration-200`}
                 onClick={(e) => handleLikeAction(e, 'unlike')}
+                aria-label="Unlike bookmark"
             />
         ) : (
             <BsBookmarkHeart
                 className={`text-3xl ${isCooldown ? "cursor-default" : "cursor-pointer"} 
-          text-black/15 hover:text-black transition-colors duration-200`}
+                text-black/15 hover:text-black transition-colors duration-200`}
                 onClick={(e) => handleLikeAction(e, 'like')}
+                aria-label="Like bookmark"
             />
         )
     );
 
     return (
         <div className={`
-      ${className} 
-      w-[150px] h-[300px] sm:w-[200px] sm:h-[400px] 
-      flex flex-col-reverse border rounded-md bg-white
-      shadow-sm hover:shadow-md transition-shadow duration-200
-    `}>
+            ${className} 
+            w-[150px] h-[300px] sm:w-[200px] sm:h-[400px] 
+            flex flex-col-reverse border rounded-md bg-white
+            shadow-sm hover:shadow-md transition-shadow duration-200
+        `}>
             <div className="m-1 bg-slate-100 flex-grow flex flex-col justify-between">
                 <div className="px-2 truncate text-center">
                     {bookmark.Name}
@@ -86,9 +82,9 @@ function BookmarkListItem({
                 <div className="px-2 flex justify-between items-center text-sm text-gray-800">
                     <span className="font-bold">{bookmark.Price.toLocaleString()} PLN</span>
                     <span className={`
-            hidden sm:inline px-2 py-1 rounded-full text-xs
-            ${inStock ? "bg-green-200 text-green-700" : "bg-red-200 text-red-700"}
-          `}>
+                        hidden sm:inline px-2 py-1 rounded-full text-xs
+                        ${inStock ? "bg-green-200 text-green-700" : "bg-red-200 text-red-700"}
+                    `}>
                         {inStock ? "dostępna" : "wyczerpana"}
                     </span>
                 </div>
@@ -101,9 +97,10 @@ function BookmarkListItem({
                 <img
                     src={bookmark.ImageUrl}
                     alt={bookmark.Name}
-                    className={`w-full h-auto ${isLoaded ? 'block' : 'hidden'}`}
+                    className={`w-full h-auto ${isLoaded ? 'block hover:cursor-pointer' : 'opacity-0'}`}
                     onLoad={() => setIsLoaded(true)}
-                    onError={() => console.error('Failed to load image:', bookmark.ImageUrl)}
+                    loading="lazy" // ✅ Improves performance
+                    onClick={() => navigate(`/bookmark/${bookmark.ID}`)}
                 />
                 <div className="absolute top-2 left-2">
                     <LikeButton />

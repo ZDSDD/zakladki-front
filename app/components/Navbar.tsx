@@ -13,7 +13,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="top-0 z-50 mt-3 px-14">
+        <nav className="top-0 z-50 mt-3 px-14 mb-2">
             <div className="flex flex-col md:flex-row text-nowrap h-12 items-center justify-between">
                 {/* Left side links: About and Dziennik Nudziary */}
                 <div className="flex justify-center md:justify-start">
