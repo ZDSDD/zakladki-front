@@ -14,7 +14,11 @@ export const useBookmarksStore = create<BookmarksState>()(
 
             fetchBookmarks: async () => {
                 try {
-                    const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/bookmarks`);
+                    const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/bookmarks`,
+                        {
+                            credentials: "include",
+                        }
+                    );
                     const data = await res.json();
                     set({ bookmarks: data });
                 } catch (error) {
